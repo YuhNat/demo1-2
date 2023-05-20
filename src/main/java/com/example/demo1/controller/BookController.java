@@ -39,20 +39,17 @@ public class BookController {
         return "redirect:/books";
     }
     @GetMapping("/edit/{id}")
-    public String editBookForm(@PathVariable("id") Long id, Model model) {
+    public String editBookForm(@PathVariable("id") Long id, Model model){
         Book book = bookService.getBookById(id);
-        if (book != null) {
-            model.addAttribute("book", book);
-            model.addAttribute("categories", categoryService.getAllCategories());
-            return "book/edit";
-        } else {
-            return "not-found";
-        }
+        model.addAttribute("book", book);
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "book/edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String editBook(@PathVariable("id") Long id, @ModelAttribute("book") Book updateBook){
-        bookService.updateBook(updateBook);
+    public String editBook(@PathVariable("id") Long id, @ModelAttribute("book") Book book){
+        book.setId(id);
+        bookService.updateBook(book);
         return "redirect:/books";
     }
 
