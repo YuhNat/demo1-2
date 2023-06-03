@@ -3,9 +3,11 @@ package com.example.demo1.controller;
 import com.example.demo1.entity.Book;
 import com.example.demo1.services.BookService;
 import com.example.demo1.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +36,11 @@ public class BookController {
     }
 
     @PostMapping("/add")
-    public String addBook(@ModelAttribute("book")Book book){
+    public String addBook(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model){
+        if (bindingResult.hasErrors()){
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "book/add";
+        }
         bookService.addBook(book);
         return "redirect:/books";
     }

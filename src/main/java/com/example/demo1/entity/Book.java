@@ -1,6 +1,8 @@
 package com.example.demo1.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -11,6 +13,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name ="title")
+    @NotEmpty(message = "Title must not be empty")
+    @Size(max= 50, min=1,message = "Title must be less 50 character")
     private String title;
     @Column(name ="author")
     private String author;
@@ -20,6 +24,9 @@ public class Book {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     public Long getId() {
         return id;
     }
