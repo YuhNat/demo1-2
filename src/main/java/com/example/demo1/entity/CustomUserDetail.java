@@ -5,25 +5,31 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CustomUserDetail implements UserDetails {
     private final User user;
     private final IUserRepository userRepository;
 
-    public CustomUserDetail(User user, IUserRepository userRepository) {
+    public CustomUserDetail(User user, IUserRepository userRepository){
         this.user = user;
-        this.userRepository = userRepository;
+        this.userRepository =userRepository;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        return authorities;
+    public Collection<? extends GrantedAuthority> getAuthorities(){
+        return Arrays.stream(userRepository.getRolesOfUser(user.getId()))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
     }
+
+
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return Collections.emptyList();
+//    }
 
     @Override
     public String getPassword() {
@@ -54,4 +60,7 @@ public class CustomUserDetail implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }
+

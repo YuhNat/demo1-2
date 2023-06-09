@@ -16,13 +16,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean
-    public  UserDetailsService userDetailsService(){
-        return new CustomUserDetailService();
 
-    }
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailService();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -33,20 +34,19 @@ public class SecurityConfig {
         auth.setPasswordEncoder(passwordEncoder());
         return auth;
     }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
-            Exception {
-        return http.csrf(csrf -> csrf.disable())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/css/**", "/js/**", "/", "/register",
-                                "/error")
+                        .requestMatchers( "/css/**", "/js/**", "/", "/register", "/error")
                         .permitAll()
-//                        .requestMatchers( "/books/edit", "/books/delete")
-//                        .hasAnyAuthority("ADMIN")
-//                        .requestMatchers("/books", "/books/add")
-//                        .hasAnyAuthority("ADMIN","USER")
+                        .requestMatchers( "/books/edit", "/books/delete")
+                        .hasAnyAuthority("ADMIN")
+                        .requestMatchers("/books", "/books/add")
+                        .hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/**")
-                        .hasAnyAuthority("ADMIN","USER")
+                        .hasAnyAuthority("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout.logoutUrl("/logout")
@@ -66,9 +66,7 @@ public class SecurityConfig {
                         .userDetailsService(userDetailsService())
                 )
                 .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.accessDeniedPage("/403"))
+                        exceptionHandling.accessDeniedPage("/404"))
                 .build();
     }
-
-
 }
